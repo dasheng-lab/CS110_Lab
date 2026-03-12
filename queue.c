@@ -77,4 +77,3 @@ void another_queue_free(Queue **queue){
   queue_free(*queue);
   *queue = NULL;
 }
-

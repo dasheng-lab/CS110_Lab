@@ -1,0 +1,6 @@
+{
+    "code-runner.executorMap": {
+        "cpp": "cd $dir && g++ '$fileName' -o '$fileNameWithoutExt' -std=c++23 -Wall -Wpedantic -Wextra -Wvla -Werror -g -O0 -fsanitize=address,undefined && ./$fileNameWithoutExt",
+        "c": "cd $dir && gcc '$fileName' -o '$fileNameWithoutExt' -std=c17 -Wpedantic -Wall -Wextra -Wvla -Werror -g -O0 -fsanitize=address,undefined && ./$fileNameWithoutExt"
+    }
+}

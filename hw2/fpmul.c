@@ -97,8 +97,8 @@ int main(void) {
             Frac = (Res_M1 >> (rmbit + rmbit_udf)) & 0x3FF;
             uint32_t outFrac = Frac;
             pointpos = rmbit - 1 + rmbit_udf + 12;
-            G = Res_M1 & (0x1 << (rmbit - 1 + rmbit_udf));
-            R = Res_M1 & (0x1 << (rmbit - 2 + rmbit_udf));
+            G = (Res_M1 & (0x1 << (rmbit - 1 + rmbit_udf))) !=0;
+            R = (Res_M1 & (0x1 << (rmbit - 2 + rmbit_udf))) !=0;
             for (uint32_t i = 0; i < rmbit - 2 + rmbit_udf; i++){
                 S |= Res_M1 & (0x1 << i);
             }

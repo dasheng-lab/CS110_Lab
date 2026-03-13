@@ -97,8 +97,8 @@ int main(void) {
             Frac = (Res_M1 >> (rmbit + rmbit_udf)) & 0x3FF;
             uint32_t outFrac = Frac;
             pointpos = rmbit - 1 + rmbit_udf + 12;
-            G = Res_M1 & (0x1 << (rmbit - 1 + rmbit_udf));
-            R = Res_M1 & (0x1 << (rmbit - 2 + rmbit_udf));
+            G = (Res_M1 & (0x1 << (rmbit - 1 + rmbit_udf))) !=0;
+            R = (Res_M1 & (0x1 << (rmbit - 2 + rmbit_udf))) !=0;
             for (uint32_t i = 0; i < rmbit - 2 + rmbit_udf; i++){
                 S |= Res_M1 & (0x1 << i);
             }
@@ -126,13 +126,13 @@ int main(void) {
             else if (!strcmp(Op1_T, "zero") || !strcmp(Op2_T, "zero")){ 
                 Res = 0;
             }
-            else if (Res_M1 & (0x1 << (pointpos - 1))){
+            else if (Res_E != -14){
                 Res = (Res_S << 15) | (Res_E + 15) << 10 | Frac; //norm
             }
             else{
                 Res = (Res_S << 15) | (Res_E + 14) << 10 | Frac; //denorm without E overflow, shit !!!
             }
-            printf("Result:%04x\n", Res);
+            printf("Result: %04x\n", Res);
         }
     }
 

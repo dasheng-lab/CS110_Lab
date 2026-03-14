@@ -135,7 +135,5 @@ int main(void) {
             printf("Result: %04x\n", Res);
         }
     }
-
-    
     return 0; 
 }

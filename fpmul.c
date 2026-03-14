@@ -60,13 +60,13 @@ int main(void) {
             uint32_t Op1_T1 = (Op1_S ^ Op2_S) << 15;
             uint32_t Op1_T2 = Op1 & 0x7FFF;
             uint32_t Op1_T3 = Op1_T1 | Op1_T2;
-            printf("Raw:N/A\nNorm:N/A\nResult:%04x\n", Op1_T3);
+            printf("Raw: N/A\nNorm: N/A\nResult: %04x\n", Op1_T3);
         }
         else if(!strcmp(Op2_T, "inf")){
             uint32_t Op2_T1 = (Op2_S ^ Op1_S) << 15;
             uint32_t Op2_T2 = Op2 & 0x7FFF;
             uint32_t Op2_T3 = Op2_T1 | Op2_T2;
-            printf("Raw:N/A\nNorm:N/A\nResult:%04x\n", Op2_T3);
+            printf("Raw: N/A\nNorm: N/A\nResult: %04x\n", Op2_T3);
         }
         else{
             uint32_t Op1_M1, Op2_M1;
@@ -130,7 +130,7 @@ int main(void) {
                 else Res = 0xFBFF; //not -inf
             }
             else if (!strcmp(Op1_T, "zero") || !strcmp(Op2_T, "zero")){ 
-                Res = Res_S << 15;
+                Res = Res_S << 15; // 0
             }
             else{
                 if (Res_M1 & (0x1 << pointpos)){

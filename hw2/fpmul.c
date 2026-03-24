@@ -60,13 +60,13 @@ int main(void) {
             uint32_t Op1_T1 = (Op1_S ^ Op2_S) << 15;
             uint32_t Op1_T2 = Op1 & 0x7FFF;
             uint32_t Op1_T3 = Op1_T1 | Op1_T2;
-            printf("Raw:N/A\nNorm:N/A\nResult:%04x\n", Op1_T3);
+            printf("Raw: N/A\nNorm: N/A\nResult: %04x\n", Op1_T3);
         }
         else if(!strcmp(Op2_T, "inf")){
             uint32_t Op2_T1 = (Op2_S ^ Op1_S) << 15;
             uint32_t Op2_T2 = Op2 & 0x7FFF;
             uint32_t Op2_T3 = Op2_T1 | Op2_T2;
-            printf("Raw:N/A\nNorm:N/A\nResult:%04x\n", Op2_T3);
+            printf("Raw: N/A\nNorm: N/A\nResult: %04x\n", Op2_T3);
         }
         else{
             uint32_t Op1_M1, Op2_M1;
@@ -82,25 +82,30 @@ int main(void) {
             uint32_t Res_M1 = Op1_M1 * Op2_M1;
             int32_t Res_S = Op1_S ^ Op2_S;
             printf("Raw: ");printbin(Res_M1, 22);printf(" E_raw=%d\n", Res_E);
-            uint32_t rmbit = 10, rmbit_udf = 0, denorm = 0;
+            uint32_t rmbit_udf = 0, pointpos = 20, Frac, G, R, S=0, Inexact;
             if (Res_M1 >= 0x200000){
                 Res_E++;
-                rmbit += 1;
+                pointpos++;
+            }
+            while (Res_E > -14 && !(Res_M1 & (0x1 << pointpos))){
+                Res_E--;
+                Res_M1 <<= 1;
             }
             if (Res_E < -14){
                 rmbit_udf = -14 - Res_E;
                 Res_E = -14;
-                denorm = 1;
+                for (uint32_t i = 0; i < rmbit_udf; i++){
+                    S += Res_M1 & (0x1 << i);
+                }
+                Res_M1 >>= rmbit_udf;
             }
             int32_t outE = Res_E;
-            uint32_t Frac,G,R,S=0,Inexact,pointpos;
-            Frac = (Res_M1 >> (rmbit + rmbit_udf)) & 0x3FF;
+            Frac = (Res_M1 >> (pointpos - 10)) & 0x3FF;
             uint32_t outFrac = Frac;
-            pointpos = rmbit - 1 + rmbit_udf + 12;
-            G = (Res_M1 & (0x1 << (rmbit - 1 + rmbit_udf))) !=0;
-            R = (Res_M1 & (0x1 << (rmbit - 2 + rmbit_udf))) !=0;
-            for (uint32_t i = 0; i < rmbit - 2 + rmbit_udf; i++){
-                S |= Res_M1 & (0x1 << i);
+            G = (Res_M1 & (0x1 << (pointpos - 11))) !=0;
+            R = (Res_M1 & (0x1 << (pointpos - 12))) !=0;
+            for (uint32_t i = 0; i < pointpos - 12; i++){
+                S += Res_M1 & (0x1 << i);
             }
             if (S != 0)S=1;
             Inexact = G | R | S;
@@ -108,10 +113,14 @@ int main(void) {
             if (Inexact && !Res_S){
                 strcpy(IsRound, "Up");
                 Frac++;
+                Res_M1 += (0x1 << (pointpos - 10));
                 if (Frac >= 0x400){
                     Frac = 0;
-                    Res_E++;
-                    pointpos++;
+                    Res_M1 += (0x1 << (pointpos - 10));
+                    if (Res_M1 > 0x200000){
+                        Res_E++;
+                        pointpos++;
+                    }
                 }
             }
             printf("Norm: E_norm=%d Fraction=", outE);printbin(outFrac, 10);printf(" G=%u R=%u S=%u Action=%s\n", G, R, S, IsRound);
@@ -120,19 +129,18 @@ int main(void) {
                 if (Res_S == 0) Res = 0x7C00; //+inf
                 else Res = 0xFBFF; //not -inf
             }
-            else if (denorm){ //denorm with E overflow
-                Res = (Res_S << 15) | Frac;
-            }
             else if (!strcmp(Op1_T, "zero") || !strcmp(Op2_T, "zero")){ 
-                Res = 0;
-            }
-            else if (Res_M1 & (0x1 << (pointpos - 1))){
-                Res = (Res_S << 15) | (Res_E + 15) << 10 | Frac; //norm
+                Res = Res_S << 15; // 0
             }
             else{
-                Res = (Res_S << 15) | (Res_E + 14) << 10 | Frac; //denorm without E overflow, shit !!!
+                if (Res_M1 & (0x1 << pointpos)){
+                    Res = (Res_S << 15) | (Res_E + 15) << 10 | Frac; //normal
+                }
+                else{
+                    Res = (Res_S << 15) | (Res_E + 14) << 10 | Frac; //denorm
+                }
             }
-            printf("Result:%04x\n", Res);
+            printf("Result: %04x\n", Res);
         }
     }
 

@@ -1,0 +1,2 @@
+Error - invalid instruction at line 28: lw x25 label3 x25
+One or more errors encountered during assembly operation.

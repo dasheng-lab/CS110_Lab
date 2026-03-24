@@ -1,0 +1,4 @@
+auipc a1 my_data1
+addi a1 a1 my_data1
+lb a0 0 a1
+lw a2 0 a1

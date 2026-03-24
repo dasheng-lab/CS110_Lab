@@ -1,0 +1,6 @@
+Error - invalid data directive at line 3: invalid .byte value (256)
+Error - invalid data directive at line 6: missing .space values
+Error - invalid data directive at line 7: too many arguments for .space
+Error - address is not a multiple of 4.
+Error - invalid data directive at line 9: invalid .word value (4294967296)
+One or more errors encountered during assembly operation.
